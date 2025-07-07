@@ -3,9 +3,9 @@
 $config = [
     'site_title' => '工具网',
     'db_host' => 'localhost',
-    'db_user' => 'root',
+    'db_user' => '',
     'db_pass' => '',
-    'db_name' => 'toolweb'
+    'db_name' => ''
 ];
 
 // 检查是否已配置

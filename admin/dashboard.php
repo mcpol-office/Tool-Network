@@ -302,10 +302,10 @@ $site_title = $config['site_title'] ?? '工具网';
         </div>
         
         <div class="menu-grid">
-            <a href="tools.php" class="menu-card">
+            <a href="plugin_manage.php" class="menu-card">
                 <div class="menu-icon">🛠️</div>
-                <div class="menu-title">工具管理</div>
-                <div class="menu-desc">添加、编辑、删除网站工具，管理工具列表和链接</div>
+                <div class="menu-title">插件管理</div>
+                <div class="menu-desc">管理和编辑所有功能插件</div>
             </a>
             
             <a href="settings.php" class="menu-card">

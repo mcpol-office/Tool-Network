@@ -43,8 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             icon VARCHAR(255) DEFAULT '🛠️',
             url VARCHAR(255) NOT NULL,
             status TINYINT(1) DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            section_id INT DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            
+            // 创建sections表
+            $sections_sql = "CREATE TABLE IF NOT EXISTS sections (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
             
             // 创建admin表
             $admin_sql = "CREATE TABLE IF NOT EXISTS admin (
@@ -54,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
             
-            if (mysqli_query($test_conn, $sql) && mysqli_query($test_conn, $admin_sql)) {
+            if (mysqli_query($test_conn, $sql) && mysqli_query($test_conn, $sections_sql) && mysqli_query($test_conn, $admin_sql)) {
                 // 插入管理员账户
                 $hashed_password = password_hash($admin_pass, PASSWORD_DEFAULT);
                 $insert_admin = "INSERT INTO admin (username, password) VALUES (?, ?) ON DUPLICATE KEY UPDATE password = ?";

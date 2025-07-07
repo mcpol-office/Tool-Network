@@ -1,17 +1,46 @@
 <?php
+session_start();
 require_once 'inc/install.php';
+require_once 'inc/db.php';
+
+// 登录校验，未登录跳转
+if (empty($_SESSION['admin'])) {
+    header('Location: admin/login.php');
+    exit;
+}
 
 $install_info = get_installation_info();
 $msg = '';
 $error = '';
 
-// 处理重装请求
+// 处理重装请求，增加二次密码验证
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
-    if (reset_installation()) {
-        $msg = '重装成功！请刷新页面重新配置。';
-        $install_info = get_installation_info(); // 重新获取状态
+    $admin_pass = $_POST['admin_pass'] ?? '';
+    $admin_user = $_SESSION['admin_user'] ?? ($install_info['admin_user'] ?? 'admin');
+    if (!$admin_pass) {
+        $error = '请填写管理员密码';
     } else {
-        $error = '重装失败，请手动删除 inc/config_data.php 文件';
+        $conn = get_db();
+        $stmt = $conn->prepare('SELECT password FROM admin WHERE username = ?');
+        $stmt->bind_param('s', $admin_user);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            if (password_verify($admin_pass, $row['password'])) {
+                if (reset_installation()) {
+                    $msg = '重装成功！请刷新页面重新配置。';
+                    $install_info = get_installation_info();
+                } else {
+                    $error = '重装失败，请手动删除 inc/config_data.php 文件';
+                }
+            } else {
+                $error = '管理员密码错误，无法重置！';
+            }
+        } else {
+            $error = '管理员账户不存在！';
+        }
+        $stmt->close();
+        $conn->close();
     }
 }
 ?>
@@ -203,6 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
                         🔐 后台登录
                     </a>
                     <form method="post" style="display: inline;">
+                        <input type="password" name="admin_pass" placeholder="请输入管理员密码" style="padding:8px 12px;border-radius:6px;border:1px solid #ccc;margin-right:10px;" required>
                         <button type="submit" name="reset" class="action-btn danger" 
                                 onclick="return confirm('确定要重新安装吗？这将删除所有配置信息。')">
                             🔄 重新安装

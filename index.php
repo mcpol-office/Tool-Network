@@ -15,7 +15,19 @@ $custom_header = $config['custom_header'] ?? '';
 
 require_once __DIR__ . '/inc/db.php';
 $conn = get_db();
-$tools = $conn->query('SELECT * FROM tools WHERE status = 1 ORDER BY id ASC');
+$sections = [];
+$res = $conn->query("SELECT * FROM sections ORDER BY id ASC");
+if ($res) {
+    while($row = $res->fetch_assoc()) {
+        $sections[$row['id']] = $row['name'];
+    }
+}
+$section_id = isset($_GET['section']) ? intval($_GET['section']) : 0;
+if ($section_id > 0) {
+    $tools = $conn->query("SELECT * FROM tools WHERE status = 1 AND section_id = $section_id ORDER BY id ASC");
+} else {
+    $tools = $conn->query("SELECT * FROM tools WHERE status = 1 ORDER BY id ASC");
+}
 if ($tools === false) {
     echo "<div style='color:red;text-align:center;'>工具数据查询失败：" . $conn->error . "</div>";
     $tools = null;
@@ -323,6 +335,13 @@ $is_admin = isset($_SESSION['admin']) && $_SESSION['admin'] === true;
                 <input type="text" class="search-box" id="searchBox" placeholder="搜索工具... (Ctrl+K)">
                 <div class="search-icon">🔍</div>
             </div>
+        </div>
+        
+        <div class="section-nav" style="margin-bottom:30px;display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="index.php" class="section-btn" style="padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;<?= $section_id==0?'font-weight:bold;box-shadow:0 2px 8px #764ba233;':'' ?>">全部</a>
+            <?php foreach($sections as $sid=>$sname): ?>
+                <a href="index.php?section=<?= $sid ?>" class="section-btn" style="padding:8px 18px;border-radius:8px;background:#f8f9fa;color:#667eea;text-decoration:none;<?= $section_id==$sid?'font-weight:bold;box-shadow:0 2px 8px #667eea33;':'' ?>"><?= htmlspecialchars($sname) ?></a>
+            <?php endforeach; ?>
         </div>
         
         <?php if ($tools && $tools->num_rows > 0): ?>
