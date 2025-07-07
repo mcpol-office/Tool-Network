@@ -1,0 +1,9 @@
+body { font-family: '微软雅黑', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+h1 { background: #3498db; color: #fff; padding: 20px; margin: 0 0 20px 0; }
+a { color: #3498db; text-decoration: none; }
+a:hover { text-decoration: underline; }
+form, table { background: #fff; padding: 20px; margin: 20px auto; border-radius: 8px; box-shadow: 0 2px 8px #ccc; max-width: 500px; }
+table { width: 90%; border-collapse: collapse; }
+th, td { padding: 8px 12px; border: 1px solid #ddd; }
+button { background: #3498db; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+button:hover { background: #217dbb; } 
